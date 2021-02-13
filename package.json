@@ -1,0 +1,15 @@
+{
+  "name": "seqtocss",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "readSeq": "node scanSeq.js",
+    "render": "node render.js"
+  },
+  "author": "Chickenbread",
+  "license": "MIT",
+  "dependencies": {
+    "jimp": "^0.16.1"
+  }
+}

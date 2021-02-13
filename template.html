@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./rendered.css">
+    <style>
+        div {
+            margin: 0;
+            padding: 0;
+        }
+
+        .display {
+            background-color: white;
+        }
+        .display .row {
+            width: ###ROWWIDTH###px;
+            height: ###PIXELSIZE###px;
+        }
+        .display .pixel {
+            display: inline-block;
+
+            background-color: #000;
+            width: ###PIXELSIZE###px;
+            height: ###PIXELSIZE###px;
+
+            animation-duration: ###DURATION###s;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+            animation-play-state: paused;
+        }
+        .display.play .pixel {
+            animation-play-state: initial;
+        }
+    </style>
+</head>
+<body>
+    <div class="display" id="###CONTAINER###"></div>
+
+    <script>
+        let display = document.getElementsByClassName('display')[0];
+
+        for (let y = 0; y < ###HEIGHT###; y++) {
+            let row = document.createElement('DIV');
+            row.className = 'row'
+            row.id = 'row_' + y;
+
+            for (let x = 0; x < ###WIDTH###; x++) {
+                let pixelID = y * ###WIDTH### + x;
+
+                let pixel = document.createElement('DIV');
+                pixel.className = 'pixel';
+                pixel.id = 'pixel_' + pixelID;
+
+                row.appendChild(pixel);
+            }
+
+            display.appendChild(row);
+        }
+
+        function runAnimation() {
+            document.getElementById('playButton').remove();
+            
+            display.className = 'display play'
+        }
+    </script>
+
+    <button id="playButton" style="margin: 20px" onclick="runAnimation(); return false;">Run Animation</button>
+</body>
+</html>

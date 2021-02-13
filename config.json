@@ -1,0 +1,16 @@
+{
+  "general": {
+    "width": 160,
+    "height": 120
+  },
+  "scan": {
+    "prefix": "BadApple_",
+    "suffix": "",
+    "filetype": "png"
+  },
+  "render": {
+    "pixelContainer": "pixels",
+    "framerate": 5,
+    "pixelSize": 10
+  }
+}
