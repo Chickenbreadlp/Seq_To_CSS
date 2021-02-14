@@ -1,7 +1,7 @@
 {
   "general": {
-    "width": 160,
-    "height": 120
+    "width": 120,
+    "height": 80
   },
   "scan": {
     "prefix": "BadApple_",
@@ -10,7 +10,7 @@
   },
   "render": {
     "pixelContainer": "pixels",
-    "framerate": 5,
-    "pixelSize": 10
+    "framerate": 20,
+    "pixelSize": 15
   }
 }

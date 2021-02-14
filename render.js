@@ -40,15 +40,17 @@ async function generateAnimation(pixelID) {
         animation += `\t${framePos}%\t{background-color:${color};}\n`;
     }
 
-    animation += `}\n${config.render.pixelContainer} #row_${position.y} #pixel_${pixelID} {animation-name: pixel_${pixelID}}`;
+    animation += `}\n#${config.render.pixelContainer} #row_${position.y} #pixel_${pixelID} {animation-name: pixel_${pixelID}}`;
     animations[pixelID] = animation;
 }
 
+console.log('Preparing Environment');
 if (fs.existsSync('./out')) {
     fs.rmdirSync('./out', { recursive: true });
 }
 fs.mkdirSync('./out');
 
+console.log('Generate Pixel Animation CSS');
 const pixelCount = config.general.width * config.general.height;
 const generators = [];
 for (let i = 0; i < pixelCount; i++) {
@@ -61,9 +63,9 @@ Promise.all(generators).then(() => {
     for (let i = 0; i < pixelCount; i++) {
         finalCSS += '\n' + animations[i];
     }
-
     fs.writeFileSync(`./out/rendered.css`, finalCSS);
 
+    console.log('Generate display HTML');
     let html = fs.readFileSync(`./template.html`, { encoding: 'utf8' });
     html = html.split('###PIXELSIZE###').join(config.render.pixelSize);
     html = html.split('###ROWWIDTH###').join(config.render.pixelSize * config.general.width);

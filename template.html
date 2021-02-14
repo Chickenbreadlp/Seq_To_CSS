@@ -8,9 +8,6 @@
             padding: 0;
         }
 
-        .display {
-            background-color: white;
-        }
         .display .row {
             width: ###ROWWIDTH###px;
             height: ###PIXELSIZE###px;
@@ -27,6 +24,7 @@
             animation-fill-mode: forwards;
             animation-play-state: paused;
         }
+
         .display.play .pixel {
             animation-play-state: initial;
         }
@@ -58,8 +56,10 @@
 
         function runAnimation() {
             document.getElementById('playButton').remove();
-            
-            display.className = 'display play'
+
+            setTimeout(() => {
+                display.className = 'display play';
+            }, 1000);
         }
     </script>
 

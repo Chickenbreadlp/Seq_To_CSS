@@ -22,6 +22,7 @@ const seqBuffer = [];
 for (let i = 0; i < config.general.height; i++) {
     seqBuffer.push([]);
 }
+
 async function scanRow(rowID, frameID, frameIndex, frame) {
     let rowBuffer = seqBuffer[rowID];
     if (frameIndex === 0) {
@@ -69,51 +70,16 @@ async function scanRow(rowID, frameID, frameIndex, frame) {
 }
 async function scanFrame(frameIndex) {
     const frameID = idList[frameIndex];
+    const frameNum = Number(frameID);
     console.log('Processing Image #' + frameID);
 
     await Jimp.read(`./temp/frames/${filePrefix}${frameID}${fileSuffix}`)
         .then(frame => {
-            /*return frame.scan(0, 0, frame.bitmap.width, frame.bitmap.height, function(x, y, idx) {
-                let value = this.bitmap.data[idx]; // Red
-                value += this.bitmap.data[idx + 1]; // Green
-                value += this.bitmap.data[idx + 2]; // Blue
-                value /= 3;
-
-                let pixelArr;
-                if (frameIndex === 0) {
-                    pixelArr = {
-                        0: value,
-                        last: 0
-                    };
-                }
-                else if (frameIndex === idList.length - 1) {
-                    pixelArr = require(`./temp/${idx/4}.json`);
-
-                    if (pixelArr[pixelArr.last] !== value && pixelArr.last !== Number(frameID) - 1) {
-                        pixelArr[Number(frameID) - 1] = pixelArr[pixelArr.last];
-                    }
-                    pixelArr[Number(frameID)] = value;
-                    pixelArr.last = Number(frameID);
-                }
-                else {
-                    pixelArr = require(`./temp/${idx/4}.json`);
-
-                    if (pixelArr[pixelArr.last] !== value) {
-                        if (pixelArr.last !== Number(frameID) - 1) {
-                            pixelArr[Number(frameID) - 1] = pixelArr[pixelArr.last];
-                        }
-                        pixelArr[Number(frameID)] = value;
-                        pixelArr.last = Number(frameID);
-                    }
-                }
-
-                fs.writeFileSync(`./temp/${idx/4}.json`, JSON.stringify(pixelArr));
-            });*/
             const rowScans = [];
             for (let i = 0; i < config.general.height; i++) {
-                rowScans.push(scanRow(i, Number(frameID), frameIndex, frame));
+                rowScans.push(scanRow(i, frameNum, frameIndex, frame));
             }
-            Promise.all(rowScans);
+            return Promise.all(rowScans);
         })
         .catch(err => {
             console.error(err);
@@ -124,6 +90,14 @@ async function scanFrame(frameIndex) {
     }
 }
 
+console.log('Preparing Environment');
+if (fs.existsSync('./temp')) {
+    fs.rmdirSync('./temp', { recursive: true });
+}
+fs.mkdirSync('./temp');
+fs.mkdirSync('./temp/frames');
+
+console.log('Scanning Input Directory');
 const inDir = fs.readdirSync('./in');
 for (const fileName of inDir) {
     if (fileName.startsWith(filePrefix) && fileName.endsWith(fileSuffix)) {
@@ -134,19 +108,17 @@ for (const fileName of inDir) {
     }
 }
 
-if (fs.existsSync('./temp')) {
-    fs.rmdirSync('./temp', { recursive: true });
-}
-fs.mkdirSync('./temp');
-fs.mkdirSync('./temp/frames');
+if (idList.length > 1) {
+    console.log('Resizing all Frames');
+    const framePromise = [];
+    for (const id of idList) {
+        framePromise.push(resizeFrame(id));
+    }
 
-const framePromise = [];
-for (const id of idList) {
-    framePromise.push(resizeFrame(id));
-}
-Promise.all(framePromise).then(async () => {
-    await scanFrame(0);
+    Promise.all(framePromise).then(async () => {
+        await scanFrame(0);
 
-    fs.rmdirSync('./temp/frames', { recursive: true });
-    fs.writeFileSync(`./temp/sequence.json`, JSON.stringify(seqBuffer));
-})
+        fs.rmdirSync('./temp/frames', {recursive: true});
+        fs.writeFileSync(`./temp/sequence.json`, JSON.stringify(seqBuffer));
+    });
+}
